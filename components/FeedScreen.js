@@ -21,6 +21,7 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 import WatermelonAnimation from './WatermelonAnimation';
 import {View,
         Modal,
+        Platform,
         TouchableHighlight,
         DatePickerIOS} from 'react-native';
 
@@ -66,7 +67,7 @@ export default class FeedScreen extends React.Component {
                           animationType={"slide"}
                           transparent={false}
                           visible={this.state.modalVisible}
-                          onRequestClose={() => alert("Modal has been closed.")}>
+                          onRequestClose={() => alert("Press cancel.")}>
                           <Container style={{marginTop: 30}}>
                               <Content>
                                   <Form style={{marginBottom: 10}}>
@@ -74,10 +75,10 @@ export default class FeedScreen extends React.Component {
                                           <Input placeholder="Details you want to add" />
                                       </Item>
                                   </Form>
-                                  <DatePickerIOS 
-                                            date={this.state.eventDate}
-                                            mode="datetime"
-                                            onDateChange={this.onDateChange} />
+                                  {Platform.OS === 'ios' && (<DatePickerIOS 
+                                                            date={this.state.eventDate}
+                                                            mode="datetime"
+                                                            onDateChange={this.onDateChange} />)}
                                     
                                   <Grid>
                                       <Col>
