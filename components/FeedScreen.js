@@ -13,6 +13,7 @@ import {Container,
         Left,
         Title,
         Fab,
+        Toast,
         Form,
         Item,
         Input,
@@ -27,6 +28,7 @@ import {View,
         DatePickerIOS} from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
+var ImagePicker = require('react-native-image-picker');
 
 export default class FeedScreen extends React.Component {
     static navigationOptions = {
@@ -38,6 +40,35 @@ export default class FeedScreen extends React.Component {
         eventDate: new Date(),
         eventDesc: '',
     }
+    options = {
+        title: 'Choose Image',
+        storageOptions: {
+            skipBackup: true,
+            path: 'images',
+        }
+    };
+    setThumbnail = () => {
+        ImagePicker.showImagePicker(this.options, (response) => {
+            if(response.didCancel) {
+                console.log('User cancelled');
+            } else if(response.error) {
+                console.log(response.error);
+            } else if(response.customButton) {
+                console.log(`User tapped on custom button ${response.customButton}`);
+            } else {
+                let source = {uri: response.uri};
+                this.setState({
+                    thubmnailSource: `data:image/jpeg;base64,${response.data}`,
+                });
+                Toast.show({
+                    supportedOrientations : ['portrait', 'landscape'],
+                    text: 'Thumbnail set.',
+                    position: 'bottom',
+                    buttonText: 'Okay',
+                });
+            }
+        });
+    };
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
     }
@@ -55,7 +86,7 @@ export default class FeedScreen extends React.Component {
                 <CardItem>
                     <Body style={{alignItems: "center"}}>
                         <WatermelonAnimation />
-                        <H3 style={{fontWeight: "bold"}}>Nothing new here</H3>
+                        <H3 style={{fontWeight: "bold", marginBottom: 10}}>Nothing new here</H3>
                         <Text style={{marginBottom: 50}}>Throw a party and let everyone know</Text>
                         <Button rounded danger 
                           style={{marginLeft: 100}}
@@ -84,7 +115,8 @@ export default class FeedScreen extends React.Component {
                                           <Input onChangeText={this.setEventDesc} placeholder="Party at Alpha Chi Omega ..." />
                                       </Item>
                                   </Form>
-                                  <Button block info rounded>
+                                  {this.state.thubmnailSource && <Image source={this.state.avatarSource} />}
+                                  <Button block info rounded onPress={this.setThumbnail} style={{marginBottom: 10}}>
                                       <Text>Set Thubmnail</Text>
                                   </Button>
                                   {Platform.OS === "android" &&(<DatePicker
