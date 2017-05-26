@@ -22,6 +22,7 @@ import WatermelonAnimation from './WatermelonAnimation';
 import {View,
         Modal,
         Platform,
+        Image,
         TouchableHighlight,
         DatePickerIOS} from 'react-native';
 
@@ -83,6 +84,9 @@ export default class FeedScreen extends React.Component {
                                           <Input onChangeText={this.setEventDesc} placeholder="Party at Alpha Chi Omega ..." />
                                       </Item>
                                   </Form>
+                                  <Button block info rounded>
+                                      <Text>Set Thubmnail</Text>
+                                  </Button>
                                   {Platform.OS === "android" &&(<DatePicker
                                                                 style={{width: 200, marginLeft: 70, marginBottom: 20}}
                                                                 date={this.state.eventDate}
