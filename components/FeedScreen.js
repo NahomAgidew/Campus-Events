@@ -25,6 +25,8 @@ import {View,
         TouchableHighlight,
         DatePickerIOS} from 'react-native';
 
+import DatePicker from 'react-native-datepicker';
+
 export default class FeedScreen extends React.Component {
     static navigationOptions = {
         headerLeft: null,
@@ -32,7 +34,8 @@ export default class FeedScreen extends React.Component {
     }
     state = {
         modalVisible: false,
-        eventDate: new Date()
+        eventDate: new Date(),
+        eventDesc: '',
     }
     setModalVisible(visible) {
         this.setState({modalVisible: visible});
@@ -40,6 +43,11 @@ export default class FeedScreen extends React.Component {
     onDateChange = (date) => {
         this.setState({eventDate: date});
     };
+    setEventDesc = (textDesc) => {
+        this.setState({
+            eventDesc: textDesc
+        })
+    }
     render() {
         let noEventsView = (
             <Card>
@@ -71,10 +79,19 @@ export default class FeedScreen extends React.Component {
                           <Container style={{marginTop: 30}}>
                               <Content>
                                   <Form style={{marginBottom: 10}}>
-                                      <Item>
-                                          <Input placeholder="Details you want to add" />
+                                      <Item rounded>
+                                          <Input onChangeText={this.setEventDesc} placeholder="Party at Alpha Chi Omega ..." />
                                       </Item>
                                   </Form>
+                                  {Platform.OS === "android" &&(<DatePicker
+                                                                style={{width: 200, marginLeft: 70, marginBottom: 20}}
+                                                                date={this.state.eventDate}
+                                                                mode="datetime"
+                                                                placeholder="Select Date"
+                                                                format="YYYY-MM-DD HH:mm"
+                                                                confirmBtnText="Confirm"
+                                                                cancelBtnText="Cancel"
+                                                                onDateChange={this.onDateChange} />)}
                                   {Platform.OS === 'ios' && (<DatePickerIOS 
                                                             date={this.state.eventDate}
                                                             mode="datetime"
@@ -89,21 +106,23 @@ export default class FeedScreen extends React.Component {
                                             }
                                         }
                                         onPress={() => {
-                                        this.setModalVisible(!this.state.modalVisible)
+                                        this.setModalVisible(!this.state.modalVisible);
+                                        this.setState({eventDesc: ''});
                                         }}>
                                         <Icon name='trash' />
                                         <Text>Cancel</Text>
                                       </Button>
                                       </Col>
                                       <Col>
-                                      <Button success iconLeft disabled={true}
+                                      <Button success iconLeft disabled={this.state.eventDesc.length <= 0}
                                         style={
                                             {
-                                                marginLeft: 90
+                                                marginLeft: 80,
                                             }
                                         }
                                         onPress={() => {
-                                        this.setModalVisible(!this.state.modalVisible)
+                                        this.setModalVisible(!this.state.modalVisible);
+                                        this.setState({eventDesc: ''});
                                         }}>
                                         <Icon name='send' />
                                         <Text>Post</Text>
