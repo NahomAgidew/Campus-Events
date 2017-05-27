@@ -19,7 +19,7 @@ export default class college extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <LoginScreen startActivity={() => this.props.navigation.navigate('Feed', {user: 'Lucy'})} />
+                <LoginScreen startActivity={() => this.props.navigation.navigate('Feed')} />
             </View>
         );
     }

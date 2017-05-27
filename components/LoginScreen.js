@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as firebase from "firebase";
 import {
   AppRegistry,
   StyleSheet,
@@ -20,6 +21,49 @@ const lockIcon = require("../imgs/login1_lock.png");
 const personIcon = require("../imgs/login1_person.png");
 
 export default class LoginScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loginDisabled: true,
+      schoolEmail: '',
+      password: '',
+    };
+    firebase.initializeApp({
+            apiKey: "AIzaSyB7cQ5BDybWo5UoHTZfADPA09uXkyyVvbo",
+            authDomain: "college-events-2c4fd.firebaseapp.com",
+            databaseURL: "https://college-events-2c4fd.firebaseio.com",
+            projectId: "college-events-2c4fd",
+            storageBucket: "college-events-2c4fd.appspot.com",
+            messagingSenderId: "249810486521"
+   });
+
+   firebase.auth().onAuthStateChanged((user) => {
+     if(user) {
+       this.props.startActivity();
+     }
+   });
+  }
+  validateCreds() {
+    const regex = /([a-zA-Z]+)?([0-9]+)?@wsu.edu/g;
+    if(this.state.schoolEmail.length > 0 && this.state.password.length > 4 && this.state.schoolEmail.match(regex) !== null) {
+      this.setState({loginDisabled: false});
+    }
+  }
+  setEmailAddress = (email) => {
+    this.setState({schoolEmail: email});
+    this.validateCreds();
+  }
+  setPassword = (pass) => {
+    this.setState({password: pass});
+    this.validateCreds();
+  }
+  joinApp = () => {
+    firebase.auth().createUserWithEmailAndPassword(this.state.schoolEmail, this.state.password).catch((err) => {
+      let errorCode = err.code;
+      let errorMessage = err.message;
+      this.props.startActivity();
+    });
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -33,6 +77,7 @@ export default class LoginScreen extends Component {
                 <Image source={personIcon} style={styles.icon} resizeMode="contain" />
               </View>
               <TextInput 
+                onChangeText={this.setEmailAddress}
                 placeholder="School Email Address" 
                 placeholderTextColor="#FFF"
                 style={styles.input}
@@ -44,13 +89,14 @@ export default class LoginScreen extends Component {
                 <Image source={lockIcon} style={styles.icon} resizeMode="contain" />
               </View>
               <TextInput 
+                onChangeText={this.setPassword}
                 placeholderTextColor="#FFF"
                 placeholder="Password" 
                 style={styles.input} 
                 secureTextEntry 
               />
             </View>
-            <TouchableOpacity activeOpacity={.5} onPress={this.props.startActivity}>
+            <TouchableOpacity activeOpacity={.5} onPress={this.joinApp} disabled={this.state.loginDisabled} >
               <View style={styles.button}>
                 <Text style={styles.buttonText}>Join</Text>
               </View>

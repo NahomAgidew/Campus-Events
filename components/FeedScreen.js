@@ -7,6 +7,8 @@ import {Container,
         Text,
         Body,
         H3,
+        List,
+        ListItem,
         Button,
         Header,
         Right,
@@ -20,25 +22,47 @@ import {Container,
         Footer} from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import WatermelonAnimation from './WatermelonAnimation';
+import EventView from './EventView';
 import {View,
         Modal,
+        RefreshControl,
         Platform,
+        ListView,
         Image,
         TouchableHighlight,
         DatePickerIOS} from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
 var ImagePicker = require('react-native-image-picker');
+import * as firebase from "firebase";
+const uuidV4 = require('uuid/v4');
 
 export default class FeedScreen extends React.Component {
+    constructor() {
+        super();
+        console.disableYellowBox = true;
+        this.database = firebase.database();
+        this.monthNames = ["January", "February", "March", "April", "May", "June",
+                           "July", "August", "September", "October", "November", "December"];
+        this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.state = {
+            modalVisible: false,
+            refreshing: false,
+            eventDate: new Date(),
+            eventDesc: '',
+            thumbnailSource: '',
+            userName: '',
+            registeredEvents: [],
+        }
+        firebase.auth().onAuthStateChanged((user) => {
+            if(user) {
+                this.setState({userName: user.email.toString().substring(0, user.email.toString().lastIndexOf('@'))});
+            }
+        });
+    }
     static navigationOptions = {
         headerLeft: null,
         title: 'Feed',
-    }
-    state = {
-        modalVisible: false,
-        eventDate: new Date(),
-        eventDesc: '',
     }
     options = {
         title: 'Choose Image',
@@ -80,6 +104,36 @@ export default class FeedScreen extends React.Component {
             eventDesc: textDesc
         })
     }
+    _onRefresh() {
+        this.setState({refreshing: true});
+        this.database.ref('events/').once('value', (snapshot) => {
+                this.setState({noPosts: snapshot.val() === null});
+                if(!this.state.noPosts) {
+                    for([key, value] of Object.entries(snapshot.val())) {
+                        this.setState({registeredEvents: this.state.registeredEvents.concat(<EventView uuid={key} attending={value['attending']} user_name={value['user_name']} post_date={value['post_date']} event_desc={value['event_desc']} />)});
+                        this.setState({refreshing: false});
+                    }
+                }
+        });
+    }
+    postEvent = () => {
+        this.database.ref(`events/${uuidV4()}`).set({
+            attending: 0,
+            user_name: this.state.userName,
+            post_date: `${this.monthNames[this.state.eventDate.getMonth()]} ${this.state.eventDate.getDate().toString()}, ${this.state.eventDate.getFullYear().toString()}`,
+            event_desc: this.state.eventDesc
+        });
+    }
+    componentWillMount() {
+        this.database.ref('events/').once('value', (snapshot) => {
+                this.setState({noPosts: snapshot.val() === null});
+                if(!this.state.noPosts) {
+                    for([key, value] of Object.entries(snapshot.val())) {
+                        this.setState({registeredEvents: this.state.registeredEvents.concat(<EventView uuid={key} attending={value['attending']} user_name={value['user_name']} post_date={value['post_date']} event_desc={value['event_desc']} />)});
+                    }
+                }
+        });
+    }
     render() {
         let noEventsView = (
             <Card>
@@ -100,7 +154,14 @@ export default class FeedScreen extends React.Component {
         return (
             <Container>
                 <Content>
-                    {noEventsView}
+                    {this.state.noPosts && noEventsView}
+                    <ListView
+                      refreshControl={
+                          <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh.bind(this)} />
+                      }
+                      dataSource={this.ds.cloneWithRows(this.state.registeredEvents)}
+                      renderRow={(data) => <View>{data}</View> } />
+
                     {/***** Start Add New Event Modal *****/}
                     <View style={{marginTop: 22}}>
                         <Modal
@@ -157,8 +218,9 @@ export default class FeedScreen extends React.Component {
                                             }
                                         }
                                         onPress={() => {
-                                        this.setModalVisible(!this.state.modalVisible);
-                                        this.setState({eventDesc: ''});
+                                            this.postEvent();
+                                            this.setModalVisible(!this.state.modalVisible);
+                                            this.setState({eventDesc: ''});
                                         }}>
                                         <Icon name='send' />
                                         <Text>Post</Text>
