@@ -125,7 +125,7 @@ export default class FeedScreen extends React.Component {
             event_desc: this.state.eventDesc
         });
     }
-    componentWillMount() {
+    getPosts = () => {
         this.database.ref('events/').once('value', (snapshot) => {
                 this.setState({noPosts: snapshot.val() === null});
                 if(!this.state.noPosts) {
@@ -134,6 +134,9 @@ export default class FeedScreen extends React.Component {
                     }
                 }
         });
+    }
+    componentWillMount() {
+        this.getPosts();
     }
     render() {
         let noEventsView = (
@@ -219,6 +222,8 @@ export default class FeedScreen extends React.Component {
                                             this.postEvent();
                                             this.setModalVisible(!this.state.modalVisible);
                                             this.setState({eventDesc: ''});
+                                            this.setState({registeredEvents: []})
+                                            this.getPosts();
                                         }}>
                                         <Icon name='send' />
                                         <Text>Post</Text>
