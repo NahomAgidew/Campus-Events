@@ -36,8 +36,9 @@ export default class LoginScreen extends Component {
             storageBucket: "college-events-2c4fd.appspot.com",
             messagingSenderId: "249810486521"
    });
-
-   firebase.auth().onAuthStateChanged((user) => {
+  }
+  componentWillMount() {
+    firebase.auth().onAuthStateChanged((user) => {
      if(user) {
        this.props.startActivity();
      }
@@ -69,7 +70,7 @@ export default class LoginScreen extends Component {
       <View style={styles.container}>
         <Image source={background} style={styles.background} resizeMode="cover">
           <View style={styles.markWrap}>
-            <PinJump style={styles.mark} esizeMode="contain" />
+            <PinJump style={styles.mark} resizeMode="contain" />
           </View>
           <View style={styles.wrapper}>
             <View style={styles.inputWrap}>

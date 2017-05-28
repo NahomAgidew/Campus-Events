@@ -22,10 +22,14 @@ export default class EventView extends Component {
     constructor(props) {
         super(props);
         this.database = firebase.database();
+        this.state = {
+            attending: this.props.attending,
+        };
     }
     addAttendees = () => {
         let uuid = this.props.uuid;
         this.database.ref(`events/${uuid}`).update({attending: this.props.attending+1});
+        this.setState({attending: this.props.attending+1})
     }
     render() {
         return (
@@ -45,7 +49,7 @@ export default class EventView extends Component {
                             <H1>{this.props.event_desc}</H1>
                             <Button transparent textStyle={{color: '#87838B'}} onPress={this.addAttendees} >
                                 <Icon name="thumbs-up" />
-                                <Text>{this.props.attending} attending</Text>
+                                <Text>{this.state.attending} attending</Text>
                             </Button>
                         </Body>
                     </CardItem>

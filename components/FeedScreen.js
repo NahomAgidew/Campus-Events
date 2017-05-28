@@ -28,6 +28,7 @@ import {View,
         RefreshControl,
         Platform,
         ListView,
+        ScrollView,
         Image,
         TouchableHighlight,
         DatePickerIOS} from 'react-native';
@@ -104,9 +105,9 @@ export default class FeedScreen extends React.Component {
             eventDesc: textDesc
         })
     }
-    _onRefresh() {
+    _onRefresh =() => {
         this.setState({refreshing: true});
-        this.database.ref('events/').once('value', (snapshot) => {
+        this.database.ref('events/').on('value', (snapshot) => {
                 this.setState({noPosts: snapshot.val() === null});
                 if(!this.state.noPosts) {
                     for([key, value] of Object.entries(snapshot.val())) {
@@ -156,9 +157,6 @@ export default class FeedScreen extends React.Component {
                 <Content>
                     {this.state.noPosts && noEventsView}
                     <ListView
-                      refreshControl={
-                          <RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh.bind(this)} />
-                      }
                       dataSource={this.ds.cloneWithRows(this.state.registeredEvents)}
                       renderRow={(data) => <View>{data}</View> } />
 
@@ -177,9 +175,9 @@ export default class FeedScreen extends React.Component {
                                       </Item>
                                   </Form>
                                   {this.state.thubmnailSource && <Image source={this.state.avatarSource} />}
-                                  <Button block info rounded onPress={this.setThumbnail} style={{marginBottom: 10}}>
+                                  {/*<Button block info rounded onPress={this.setThumbnail} style={{marginBottom: 10}}>
                                       <Text>Set Thubmnail</Text>
-                                  </Button>
+                                  </Button>*/}
                                   {Platform.OS === "android" &&(<DatePicker
                                                                 style={{width: 200, marginLeft: 70, marginBottom: 20}}
                                                                 date={this.state.eventDate}
