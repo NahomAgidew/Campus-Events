@@ -29,12 +29,6 @@ export default class LoginScreen extends Component {
       password: '',
     };
     firebase.initializeApp({
-            apiKey: "AIzaSyB7cQ5BDybWo5UoHTZfADPA09uXkyyVvbo",
-            authDomain: "college-events-2c4fd.firebaseapp.com",
-            databaseURL: "https://college-events-2c4fd.firebaseio.com",
-            projectId: "college-events-2c4fd",
-            storageBucket: "college-events-2c4fd.appspot.com",
-            messagingSenderId: "249810486521"
    });
   }
   componentWillMount() {
