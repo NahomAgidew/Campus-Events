@@ -1,8 +1,6 @@
 # Campus Events
 
 <img src="screenshots/1.gif" >
-<img src="screenshots/4.png" >
-<img src="screenshots/3.png" >
 
 * `Keep up with campus parties.`
 
