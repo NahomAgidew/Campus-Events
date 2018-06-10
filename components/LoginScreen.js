@@ -39,7 +39,7 @@ export default class LoginScreen extends Component {
    });
   }
   validateCreds() {
-    const regex = /([a-zA-Z]+)?([0-9]+)?@wsu.edu/g;
+    const regex = /([a-zA-Z]+)?([0-9]+)?@uw.edu/g;
     if(this.state.schoolEmail.length > 0 && this.state.password.length > 4 && this.state.schoolEmail.match(regex) !== null) {
       this.setState({loginDisabled: false});
     }
