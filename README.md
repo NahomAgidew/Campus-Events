@@ -1,11 +1,14 @@
 # Campus Events
 
+This app lets you :
+* Plan and broadcast 🎉 parties on your campus,
+* Discover events near you.
+Have fun!!! 🍻🍻🍻
+
 <img src="screenshots/1.gif" >
 <img src="screenshots/2.gif" >
 
-* `Keep up with campus parties.`
-
-## How to run
+## Building the app
 
 1. Clone this repo.
 2. Create a Firebase account https://firebase.google.com
